@@ -1,8 +1,15 @@
 const axios = require('axios')
 
 async function getTodos() {
+    try {
     const response = await axios.get("https://jsonplaceholder.typicode.com/todos");
+    console.log(response)
     return response.data;
+    } catch (error) {
+        console.log(`Error: ${error.message}`);
+        return [];
+    }
+
     };
 
 async function showFirst10() {
@@ -21,12 +28,14 @@ async function showCompleted() {
     const data = await getTodos();    
     const completedTodo = data.filter(todo => todo.completed);
     console.log(completedTodo);
+    console.log(`Total: ${completedTodo.length}`)
 }
 
 async function showUncompleted() {
     const data = await getTodos();    
     const uncompletedTodo = data.filter(todo => !todo.completed);
     console.log(uncompletedTodo);
+    console.log(`Total: ${uncompletedTodo.length}`)
 }
 
 async function showStatistics() {
@@ -69,11 +78,12 @@ const command = process.argv[2];
     } else {
         console.log(`
     Explanation:
-            
-    node index.ts all -> shows all todos
-    node index.ts first10 -> shows first todos
-    node index.ts completed -> shows only the completed todos
-    node index.ts uncompleted -> shows only the uncompleted todos
+
+    node index.js all -> shows all todos
+    node index.js stats -> shows statistics 
+    node index.js first10 -> shows first todos
+    node index.js completed -> shows only the completed todos
+    node index.js uncompleted -> shows only the uncompleted todos
             `)
     };
 })
