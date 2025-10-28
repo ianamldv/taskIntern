@@ -1,15 +1,39 @@
 const axios = require('axios')
 
 async function getTodos() {
-    try{
     const response = await axios.get("https://jsonplaceholder.typicode.com/todos");
-    const data = response.data;
+    return response.data;
+    };
 
+async function showFirst10() {
+    const data = await getTodos();
+    const first10 = data.slice(0, 10);
+    console.log("Fetching todos...");
 
+    first10.forEach(todo => {
+        const status = todo.completed ? '✓' : 'x';
+        console.log(`${todo.id}. [${status}] ${todo.title}`);
+        });
+    console.log("           ");
+    };
+
+async function showCompleted() {
+    const data = await getTodos();    
+    const completedTodo = data.filter(todo => todo.completed);
+    console.log(completedTodo);
+}
+
+async function showUncompleted() {
+    const data = await getTodos();    
+    const uncompletedTodo = data.filter(todo => !todo.completed);
+    console.log(uncompletedTodo);
+}
+
+async function showStatistics() {
+    const data = await getTodos();
+    const total = data.length;
     const completedTodo = data.filter(todo => todo.completed);
     const uncompletedTodo = data.filter(todo => !todo.completed)
-
-    const total = data.length;
     const completed = completedTodo.length;
     const uncompleted = uncompletedTodo.length;
 
@@ -26,10 +50,31 @@ async function getTodos() {
     const filledLength = (percentCompleted/100)*barLength;
     const bar = "█".repeat(filledLength) + "░".repeat(barLength-filledLength);
     console.log(`Progresss: ${bar} ${percentCompleted}%`);
+    };
 
-    } catch(error) {
-        console.log(`Error: ${error.message}`)
-    }
-}
+const command = process.argv[2];
 
-getTodos()
+
+(async () => {
+    if (command === 'first10') {
+        await showFirst10();
+    } else if (command === 'stats') {
+        await showStatistics()
+    } else if (command === 'completed') {
+        await showCompleted();
+    } else if (command === 'uncompleted') {
+        await showUncompleted();
+    } else if (command === 'all') {
+        await getTodos();
+    } else {
+        console.log(`
+    Explanation:
+            
+    node index.ts all -> shows all todos
+    node index.ts first10 -> shows first todos
+    node index.ts completed -> shows only the completed todos
+    node index.ts uncompleted -> shows only the uncompleted todos
+            `)
+    };
+})
+();
